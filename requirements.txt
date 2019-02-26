@@ -1,5 +1,5 @@
 apscheduler
 gunicorn
-Flask==0.10.1
+Flask==0.12.3
 flask_sqlalchemy
 requests
