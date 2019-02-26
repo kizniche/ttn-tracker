@@ -1,8 +1,8 @@
 ## The Things Network Tracker (TTN-Tracker)
 
-For use with [kizniche/ttgo-tbeam-ttnmapper](https://github.com/kizniche/ttgo-tbeam-ttnmapper) for the T-Beam TTGO that transmits data to [The Things Network](https://thethingsnetwork.org) (TTN) for [TTN Mapper](https://ttnmapper.org/). This is the tracker node.
+For use with [kizniche/ttgo-tbeam-ttnmapper](https://github.com/kizniche/ttgo-tbeam-ttnmapper) for the T-Beam TTGO (tracker node) that transmits data to [The Things Network](https://thethingsnetwork.org) (TTN) for [TTN Mapper](https://ttnmapper.org/).
 
-This Flask app hosts a wen-enabled front end using [gunicorn](https://github.com/benoitc/gunicorn) and [nginx](http://nginx.org/). It pulls coordinate data acquired from the tracker node that's been stored on TTN. It stores these coordinates in an SQLite database and displays the coordinates on a map ([leaflet](https://github.com/Leaflet/Leaflet)) in your web browser. This is useful for testing the signal range from gateways while driving, so you can see when and where your signal was able to reach a gateway.
+This Flask app hosts a web-enabled front end using [gunicorn](https://github.com/benoitc/gunicorn) and [nginx](http://nginx.org/). It pulls coordinate data acquired from the tracker node that's been stored on TTN. It stores these coordinates in an SQLite database and displays the coordinates on a map ([leaflet](https://github.com/Leaflet/Leaflet)) in your web browser. This is useful for testing the signal range from gateways while driving, so you can see when and where your signal was able to reach a gateway.
 
 This is very similar to the TTN Mapper frontend, however TTN Mapper takes a long time to update the data points on its map. This software runs locally on your own hardware and responds instantly to new data on TTN, making it a good companion in your vehicle if you want to get instant updates as to whether your tracker node successfully communicated its coordinates or not.
 
@@ -33,8 +33,10 @@ Make sure you have your application set up on The Things Network with the integr
 
 ### Run
 
-sudo service ttn-tracker start
+```sudo service ttn-tracker start```
 
 ### Web Address
+
+Note: there is no security preventing someone from viewing this page if they happen to request "/dsf673bh" on the server (however, knowing this is the page is unlikely). Therefore, make sure you are comfortable with this or implement your own security measures such as not allowing port 5500 to be publicly accessible (connect to your home network via VPN to access the app) or add a login system such as [Flask-Login](https://github.com/maxcountryman/flask-login).
 
 http://127.0.0.1:5500/dsf673bh
