@@ -1,0 +1,5 @@
+apscheduler
+gunicorn
+Flask==0.10.1
+flask_sqlalchemy
+requests

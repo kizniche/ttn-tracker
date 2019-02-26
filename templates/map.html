@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>TTNMapper Retriever, Biatch!</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <link rel="stylesheet" href="{{url_for('static', filename='leaflet/leaflet.css')}}"/>
+    <link rel="stylesheet" href="{{url_for('static', filename='leaflet-measure/leaflet-measure.css')}}" />
+
+    <script src="{{url_for('static', filename='leaflet/leaflet.js')}}"></script>
+    <script src="{{url_for('static', filename='leaflet-measure/leaflet-measure.js')}}"></script>
+    <script src="{{url_for('static', filename='leaflet-bing-layer.min.js')}}"></script>
+    <script src="{{url_for('static', filename='esri-leaflet.js')}}"></script>
+  </head>
+  <body>
+
+    <div id="mapid" style="height: 98vh; width: 100%"></div>
+
+    <script>
+      var osm_Link = '<a href="http://openstreetmap.org">OpenStreetMap</a>',
+          otm_Link = '<a href="http://opentopomap.org/">OpenTopoMap</a>',
+          bing_Link = '<a href="http://bing.com/">Bing</a>',
+          google_Link = '<a href="http://google.com/">Google</a>';
+
+      var osm_Url = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+          osm_Attrib = '&copy; ' + osm_Link + ' Contributors',
+          otm_Url = 'http://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+          otm_Attrib = '&copy; ' + otm_Link + ' Contributors ',
+          bing_Attrib = '&copy; ' + bing_Link + ' Contributors',
+          google_Url = 'http://mt.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+          google_Attrib = '&copy; ' + google_Link + ' Contributors';
+
+      var osm_Map = L.tileLayer(osm_Url, {attribution: osm_Attrib}),
+          esri_Map = L.esri.basemapLayer("Topographic"),
+          otm_Map = L.tileLayer(otm_Url, {attribution: otm_Attrib}),
+          google_Map = L.tileLayer(google_Url, {attribution: google_Attrib}),
+          bing_dark = L.tileLayer.bing({bingMapsKey: 'Ahpy5iReID6QJSUjazLaJbAkUMg2R990DMsYlbxMbf3irXoOVgFb0eyV3JPntW2Q', imagerySet: 'CanvasDark', attribution: bing_Attrib}),
+          bing_sat = L.tileLayer.bing({bingMapsKey: 'Ahpy5iReID6QJSUjazLaJbAkUMg2R990DMsYlbxMbf3irXoOVgFb0eyV3JPntW2Q', imagerySet: 'Aerial', attribution: bing_Attrib}),
+          bing_sat_labels = L.tileLayer.bing({bingMapsKey: 'Ahpy5iReID6QJSUjazLaJbAkUMg2R990DMsYlbxMbf3irXoOVgFb0eyV3JPntW2Q', imagerySet: 'AerialWithLabels', attribution: bing_Attrib});
+
+      //Create a map that remembers where it was zoomed to
+      function boundsChanged () {
+        localStorage.setItem('bounds', JSON.stringify(map.getBounds()));
+        default_zoom = false;
+      }
+
+      var map;
+      var default_zoom = true;
+
+      b = JSON.parse(localStorage.getItem('bounds'));
+      if (b == null)
+      {
+        map = L.map('mapid', {layers: [esri_Map]}).setView([{{start_lat}}, {{start_lon}}], 15);
+      }
+      else {
+        map = L.map('mapid', {layers: [esri_Map]});
+        try {
+          map.fitBounds([[b._southWest.lat%90,b._southWest.lng%180],[b._northEast.lat%90,b._northEast.lng%180]]);
+          default_zoom = false;
+        } catch (err) {
+          map.setView([{{start_lat}}, {{start_lon}}], 15);
+        }
+      }
+
+      map.on('dragend', boundsChanged);
+      map.on('zoomend', boundsChanged);
+
+      //disable inertia because it is irritating and slow
+      map.options.inertia=false;
+
+
+      var measureControl = L.control.measure({
+        activeColor: '#FF0000',
+        completedColor: '#FF8000',
+        primaryLengthUnit: 'miles',
+        secondaryLengthUnit: 'kilometers'
+      });
+      measureControl.addTo(map);
+
+      var baseLayers = {
+          "Topographic": esri_Map,
+          "OpenStreetMap": osm_Map,
+          "OpenTopoMap": otm_Map,
+          "Google": google_Map,
+          "Bing (Dark)": bing_dark,
+          "Bing Satellite": bing_sat,
+          "Bing Satellite (w Labels)": bing_sat_labels
+      };
+      L.control.layers(baseLayers).addTo(map);
+
+      map.on('click', function(e) {
+        console.log("Clicked: " + e.latlng.lat + ", " + e.latlng.lng);
+      });
+
+      {% for each_location in location_data %}
+      var node = L.circleMarker([{{each_location.latitude}}, {{each_location.longitude}}], {
+          color: 'red',
+          radius: 5
+      }).bindPopup('Node: {{each_location.device_id}}<br />{{each_location.datetime}}<br />Lat/Lon: {{each_location.latitude|float|round(6)}}, {{each_location.longitude|float|round(6)}}<br />Altitude: {{each_location.altitude}} m, hdop: {{each_location.hdop}}').addTo(map);
+      {% endfor %}
+
+      {% for each_gateway in gateway_locations %}
+      var gateway = L.marker([{{each_gateway[1]}}, {{each_gateway[2]}}]).bindPopup('Gateway: {{each_gateway[0]}}<br />Lat/Lon: {{each_gateway[1]}}, {{each_gateway[2]}}').addTo(map);
+      {% endfor %}
+
+    </script>
+
+  </body>
+</html>
