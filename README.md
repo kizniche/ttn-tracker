@@ -35,6 +35,12 @@ curl -sSL https://get.docker.com | sh
 sudo pip install docker-compose
 ```
 
+### Add user to docker group
+
+```sudo usermod -a -G docker YOUR_USER```
+
+Then log out and back in again.
+
 ### Clone this repository
 
 ```
@@ -46,9 +52,11 @@ cd ttn-tracker
 
 Edit ```ttn-tracker/flask_app/config.py``` with your application API Key, application ID, Device ID(s), gateway location(s), and Bing map API key (optional) before building the docker images. If you need to edit this file after the images are created, you can rebuild the image (destroying data) or copy the new config file over the old file while the flask_app container is running (see [Notes](#notes), below).
 
+```nano flask_app/config.py```
+
 ### Build and start the services
 
-```sudo make build```
+```make build```
 
 ### Access the app
 
@@ -63,32 +71,32 @@ Note: there is no security preventing someone from viewing this page if they hap
 
 ### Stop services (preserving data)
 
-```sudo docker-compose stop```
+```docker-compose stop```
 
 ### Start services
 
-```sudo docker-compose start```
+```docker-compose start```
 
 ### Stop services and delete data (keep containers)
 
-```sudo docker-compose down```
+```docker-compose down```
 
 ### Stop services and delete containers
 
-```sudo docker-compose rm -fs```
+```docker-compose rm -fs```
 
 ### List docker containers
 
-```sudo docker ps```
+```docker ps```
 
 ### Start a shell in a docker container
 
-```sudo docker exec -i -t CONTAINER_ID /bin/bash```
+```docker exec -i -t CONTAINER_ID /bin/bash```
 
 ### Copy a file to a docker container
 
-```docker cp foo.txt CONTAINER_ID:/foo.txt```
+```docker cp ./foo.txt CONTAINER_ID:/foo.txt```
 
 ### Copy a file from a docker container
 
-```docker cp CONTAINER_ID:/foo.txt foo.txt```
+```docker cp CONTAINER_ID:/foo.txt ./foo.txt```
