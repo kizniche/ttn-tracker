@@ -25,22 +25,7 @@ gateway_locations = [
 bing_api_key = ''
 
 
-def config_app(app, **kwargs):
-    """Flask app configuration
-
-    Parameters
-    ----------
-    app: Flask app
-    debug: optional, default=False
-
-    Returns
-    -------
-    app: Flask app
-    """
-
-    if kwargs.get('debug', False):
-        app.server.debug = True
-
+def config_app(app):
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{db}'.format(db=path_db)
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
