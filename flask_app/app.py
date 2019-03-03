@@ -6,27 +6,26 @@ from math import radians
 from math import sin
 from math import sqrt
 
+import os
 import requests
 from apscheduler.schedulers.background import BackgroundScheduler
-from flask import Flask
-from flask import render_template
-from flask_sqlalchemy import SQLAlchemy
-
 from config import app_key
 from config import application
+from config import bing_api_key
+from config import config_app
 from config import devices
 from config import gateway_locations
 from config import path_db
 from config import start_lat
 from config import start_lon
+from flask import Flask
+from flask import render_template
+from flask_sqlalchemy import SQLAlchemy
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 logger = logging.getLogger(__name__)
 
-app = Flask(__name__, template_folder="./templates")
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{db}'.format(db=path_db)
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app = config_app(Flask(__name__, template_folder="./templates"))
 db = SQLAlchemy(app)
 
 
@@ -66,10 +65,15 @@ class LastAcquisition(db.Model):
         return '<ID %r>' % self.id
 
 
+if not os.path.exists(path_db):
+    db.create_all()
+
+
 @app.route('/dsf673bh')
-def hello_world():
+def main_page():
     get_new_data()
     return render_template('map.html',
+                           bing_api_key=bing_api_key,
                            gateway_locations=gateway_locations,
                            location_data=Location.query.all(),
                            start_lat=start_lat,
@@ -147,4 +151,4 @@ def distance_coordinates(lat1, lon1, lat2, lon2):
 
 if __name__ == '__main__':
     db.create_all()
-    app.run(debug=True, host='0.0.0.0', port=5500)
+    app.run(debug=True, host='0.0.0.0', port=8000)

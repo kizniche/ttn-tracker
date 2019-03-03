@@ -35,8 +35,8 @@
           esri_Map = L.esri.basemapLayer("Topographic"),
           otm_Map = L.tileLayer(otm_Url, {attribution: otm_Attrib}),
           google_Map = L.tileLayer(google_Url, {attribution: google_Attrib}),
-          bing_dark = L.tileLayer.bing({bingMapsKey: 'Ahpy5iReID6QJSUjazLaJbAkUMg2R990DMsYlbxMbf3irXoOVgFb0eyV3JPntW2Q', imagerySet: 'CanvasDark', attribution: bing_Attrib}),
-          bing_sat = L.tileLayer.bing({bingMapsKey: 'Ahpy5iReID6QJSUjazLaJbAkUMg2R990DMsYlbxMbf3irXoOVgFb0eyV3JPntW2Q', imagerySet: 'Aerial', attribution: bing_Attrib}),
+          bing_dark = L.tileLayer.bing({bingMapsKey: '{{bing_api_key}}', imagerySet: 'CanvasDark', attribution: bing_Attrib}),
+          bing_sat = L.tileLayer.bing({bingMapsKey: '{{bing_api_key}}', imagerySet: 'Aerial', attribution: bing_Attrib}),
           bing_sat_labels = L.tileLayer.bing({bingMapsKey: 'Ahpy5iReID6QJSUjazLaJbAkUMg2R990DMsYlbxMbf3irXoOVgFb0eyV3JPntW2Q', imagerySet: 'AerialWithLabels', attribution: bing_Attrib});
 
       //Create a map that remembers where it was zoomed to
