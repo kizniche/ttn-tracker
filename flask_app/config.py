@@ -26,20 +26,16 @@ bing_api_key = ''
 
 
 def config_app(app, **kwargs):
-    """Dash app configuration
+    """Flask app configuration
 
     Parameters
     ----------
-    app: Dash app
+    app: Flask app
     debug: optional, default=False
 
     Returns
     -------
-    app: Dash app
-        With added css, ga and layout container with:
-        app-layout: main div, should not be a target of an ouput callback
-        page-content: container div, target for an ouput callback
-        url: Location, target of an input callback
+    app: Flask app
     """
 
     if kwargs.get('debug', False):
