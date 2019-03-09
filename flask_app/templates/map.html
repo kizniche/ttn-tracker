@@ -1,15 +1,19 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>TTNMapper Retriever, Biatch!</title>
+    <title>TTN Tracker</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
     <link rel="stylesheet" href="{{url_for('static', filename='leaflet/leaflet.css')}}"/>
+    <link rel="stylesheet" href="{{url_for('static', filename='fontawesome/css/all.css')}}" />
     <link rel="stylesheet" href="{{url_for('static', filename='leaflet-measure/leaflet-measure.css')}}" />
+    <link rel="stylesheet" href="{{url_for('static', filename='leaflet-locatecontrol/L.Control.Locate.mapbox.min.css')}}" />
 
+    <script src="{{url_for('static', filename='jquery-3.3.1.min.js')}}"></script>
     <script src="{{url_for('static', filename='leaflet/leaflet.js')}}"></script>
     <script src="{{url_for('static', filename='leaflet-measure/leaflet-measure.js')}}"></script>
+    <script src="{{url_for('static', filename='leaflet-locatecontrol/L.Control.Locate.min.js')}}"></script>
     <script src="{{url_for('static', filename='leaflet-bing-layer.min.js')}}"></script>
     <script src="{{url_for('static', filename='esri-leaflet.js')}}"></script>
   </head>
@@ -82,6 +86,8 @@
       });
       measureControl.addTo(map);
 
+      L.control.locate().addTo(map);
+
       var baseLayers = {
           "Topographic": esri_Map,
           "OpenStreetMap": osm_Map,
@@ -109,6 +115,33 @@
       {% for each_gateway in gateway_locations %}
       var gateway = L.marker([{{each_gateway[1]}}, {{each_gateway[2]}}]).bindPopup('Gateway: {{each_gateway[0]}}<br />Lat/Lon: {{each_gateway[1]}}, {{each_gateway[2]}}').addTo(map);
       {% endfor %}
+
+      function add_new_markers(past_seconds) {
+        var url = '/dsf673bh_past/' + past_seconds;
+        $.getJSON(url,
+          function (data, responseText, jqXHR) {
+            if (jqXHR.status !== 204) {
+              for (i = 0; i <= data.length; i++) {
+                var node = L.circleMarker([parseFloat(data[i]["latitude"]), parseFloat(data[i]["longitude"])], {
+                  color: 'red',
+                  radius: 5
+                }).bindPopup('Node: ' + data[i]["device_id"] + '<br />' + data[i]["datetime"] + '<br />Lat/Lon: ' + data[i]["latitude"] + ', ' + data[i]["longitude"] + '<br />Altitude: ' + data[i]["altitude"] + ' m, hdop: ' + data[i]["hdop"]).addTo(map);
+              }
+            }
+          }
+        );
+      }
+
+      // Repeat function for getLastData()
+      function repeat_add_new_markers(past_seconds) {
+        setInterval(function () {
+          add_new_markers(past_seconds)
+        }, Number(past_seconds) * 1000);
+      }
+
+      window.onload = function() {
+        repeat_add_new_markers('{{refresh_period_seconds}}');
+      };
 
     </script>
 

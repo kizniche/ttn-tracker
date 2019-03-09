@@ -16,9 +16,12 @@ from config import config_app
 from config import devices
 from config import gateway_locations
 from config import path_db
+from config import refresh_period_seconds
 from config import start_lat
 from config import start_lon
+from dateutil.parser import parser
 from flask import Flask
+from flask import jsonify
 from flask import render_template
 from flask_sqlalchemy import SQLAlchemy
 
@@ -42,10 +45,11 @@ class Location(db.Model):
     __tablename__ = "location"
 
     id = db.Column(db.Integer, primary_key=True)
+    added_at = db.Column(db.DateTime, default=datetime.datetime.now)
     device_id = db.Column(db.String(250))
-    last_data_date = db.Column(db.DateTime)
     raw = db.Column(db.String(250))
     datetime = db.Column(db.String(250))
+    datetime_obj = db.Column(db.DateTime)
     latitude = db.Column(db.String(250))
     longitude = db.Column(db.String(250))
     altitude = db.Column(db.Integer)
@@ -53,6 +57,18 @@ class Location(db.Model):
 
     def __repr__(self):
         return '<ID %r>' % self.id
+
+    @property
+    def serialize(self):
+        """Return object data in easily serializeable format"""
+        return {
+            'device_id': self.device_id,
+            'datetime': self.datetime,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'altitude': self.altitude,
+            'hdop': self.hdop
+        }
 
 
 class LastAcquisition(db.Model):
@@ -76,8 +92,85 @@ def main_page():
                            bing_api_key=bing_api_key,
                            gateway_locations=gateway_locations,
                            location_data=Location.query.all(),
+                           refresh_period_seconds=refresh_period_seconds,
                            start_lat=start_lat,
                            start_lon=start_lon)
+
+
+@app.route('/dsf673bh_past/<seconds>')
+def get_past_data(seconds):
+    # for testing
+    # test_marker = [
+    #     {
+    #         'device_id': 'test',
+    #         'datetime': '2019-02-11T13:51:04.336697974Z',
+    #         'date': parser().parse('2019-03-08T16:43:54.720956321Z'),
+    #         'latitude': '34.040066',
+    #         'longitude': '-84.560319',
+    #         'altitude': '200',
+    #         'hdop': '3.2'
+    #     },
+    #     {
+    #         'device_id': 'test2',
+    #         'datetime': '2019-02-11T13:51:04.336697974Z',
+    #         'date': parser().parse('2019-03-08T16:43:54.720956321Z'),
+    #         'latitude': '34.045066',
+    #         'longitude': '-84.556319',
+    #         'altitude': '220',
+    #         'hdop': '4'
+    #     }
+    # ]
+    # return jsonify(test_marker)
+
+    # now_utc = datetime.datetime.utcnow()
+    #
+    # new_location = Location(
+    #     device_id='test',
+    #     datetime_obj=now_utc,
+    #     datetime=now_utc.strftime("%Y-%m-%d %H:%M:%S.%f"),
+    #     latitude='34.040066',
+    #     longitude='-84.560319',
+    #     altitude='300',
+    #     hdop='4')
+    # db.session.add(new_location)
+    # db.session.commit()
+    #
+    # logger.error("TEST00: save {}".format(now_utc.strftime("%Y-%m-%d %H:%M:%S.%f")))
+    #
+    # now_utc = datetime.datetime.utcnow()
+    #
+    # new_location = Location(
+    #     device_id='test',
+    #     datetime_obj=now_utc,
+    #     datetime=now_utc.strftime("%Y-%m-%d %H:%M:%S.%f"),
+    #     latitude='34.045066',
+    #     longitude='-84.556319',
+    #     altitude='300',
+    #     hdop='4')
+    # db.session.add(new_location)
+    # db.session.commit()
+    #
+    # for each_loc in Location.query.all():
+    #     logger.error("TEST01: test {}".format(each_loc.added_at.strftime("%Y-%m-%d %H:%M:%S.%f")))
+    #
+    # logger.error("TEST01: save {}".format(now_utc.strftime("%Y-%m-%d %H:%M:%S.%f")))
+
+    past_dt_object = datetime.datetime.now() - datetime.timedelta(seconds=int(seconds))
+
+    # logger.error("TEST02: {}".format(past_dt_object.strftime("%Y-%m-%d %H:%M:%S.%f")))
+
+    if seconds_from_last() > 10:
+        get_new_data()
+
+    markers = Location.query.filter(Location.added_at > past_dt_object).all()
+
+    # logger.error("TEST03: {} > {}: {}".format(now_utc.strftime("%Y-%m-%d %H:%M:%S.%f"),
+    #                                           past_dt_object.strftime("%Y-%m-%d %H:%M:%S.%f"),
+    #                                           now_utc > past_dt_object))
+    #
+    # logger.error("TEST04: {}".format(Location.query.filter(Location.added_at > past_dt_object).count()))
+
+    return jsonify([i.serialize for i in markers])
 
 
 def get_new_data():
@@ -86,6 +179,7 @@ def get_new_data():
         past_seconds = int(last_seconds) + 1
     else:
         past_seconds = 604800  # 7 days, max The Things Network storage allows
+
     for each_device in devices:
         endpoint = "https://{app}.data.thethingsnetwork.org/api/v2/query/{dev}?last={time}".format(
             app=application, dev=each_device, time="{}s".format(past_seconds))
@@ -100,6 +194,7 @@ def get_new_data():
                     new_location = Location(
                         device_id=each_resp['device_id'],
                         raw=each_resp['raw'],
+                        datetime_obj=parser().parse(each_resp['time']),
                         datetime=each_resp['time'],
                         latitude=each_resp['latitude'],
                         longitude=each_resp['longitude'],
@@ -109,6 +204,7 @@ def get_new_data():
                     db.session.commit()
         except:
             pass
+
     set_date_now()
 
 

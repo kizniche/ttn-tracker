@@ -15,8 +15,11 @@ Successfully built this on Raspbian OS (Raspberry Pi 3) and Ubuntu 18.04.2 (64-b
 ### Features
 
  - Multiple map layers, including topology, streets, and satellite ([Bing API key](https://www.bingmapsportal.com) required for satellite)
+ - Automatically acquires new data and adds markers to the map
+ - Tracking tool to use device GPS to place marker of current position (and direction) on map
+ - SSL/HTTPS (required for location tracking)
  - Measuring tool for measure distances between points
- - Map stays focused on the same point across page refreshes (refreshing adds new data points to the map)
+ - Map stays focused on the same point across page refreshes
  - Clicking gateway or data point markers pops up information about them
 
 ### TODO
@@ -62,7 +65,7 @@ Edit ```ttn-tracker/flask_app/config.py``` with your application API Key, applic
 
 Open a web browser to the address, below, replacing IP_ADDRESS with the IP address of the system running the docker containers.
 
-```http://IP_ADDRESS:5550/dsf673bh```
+```https://IP_ADDRESS:5550/dsf673bh```
 
 Note: there is no security preventing someone from viewing this page if they happen to request "/dsf673bh" on the server (however, knowing this is the page is unlikely). Therefore, make sure you are comfortable with this or implement your own security measures such as not allowing port 5550 to be publicly accessible (connect to your home network via VPN to access the app) or add a login system such as [Flask-Login](https://github.com/maxcountryman/flask-login).
 
