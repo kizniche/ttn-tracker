@@ -99,77 +99,14 @@ def main_page():
 
 @app.route('/dsf673bh_past/<seconds>')
 def get_past_data(seconds):
-    # for testing
-    # test_marker = [
-    #     {
-    #         'device_id': 'test',
-    #         'datetime': '2019-02-11T13:51:04.336697974Z',
-    #         'date': parser().parse('2019-03-08T16:43:54.720956321Z'),
-    #         'latitude': '34.040066',
-    #         'longitude': '-84.560319',
-    #         'altitude': '200',
-    #         'hdop': '3.2'
-    #     },
-    #     {
-    #         'device_id': 'test2',
-    #         'datetime': '2019-02-11T13:51:04.336697974Z',
-    #         'date': parser().parse('2019-03-08T16:43:54.720956321Z'),
-    #         'latitude': '34.045066',
-    #         'longitude': '-84.556319',
-    #         'altitude': '220',
-    #         'hdop': '4'
-    #     }
-    # ]
-    # return jsonify(test_marker)
-
-    # now_utc = datetime.datetime.utcnow()
-    #
-    # new_location = Location(
-    #     device_id='test',
-    #     datetime_obj=now_utc,
-    #     datetime=now_utc.strftime("%Y-%m-%d %H:%M:%S.%f"),
-    #     latitude='34.040066',
-    #     longitude='-84.560319',
-    #     altitude='300',
-    #     hdop='4')
-    # db.session.add(new_location)
-    # db.session.commit()
-    #
-    # logger.error("TEST00: save {}".format(now_utc.strftime("%Y-%m-%d %H:%M:%S.%f")))
-    #
-    # now_utc = datetime.datetime.utcnow()
-    #
-    # new_location = Location(
-    #     device_id='test',
-    #     datetime_obj=now_utc,
-    #     datetime=now_utc.strftime("%Y-%m-%d %H:%M:%S.%f"),
-    #     latitude='34.045066',
-    #     longitude='-84.556319',
-    #     altitude='300',
-    #     hdop='4')
-    # db.session.add(new_location)
-    # db.session.commit()
-    #
-    # for each_loc in Location.query.all():
-    #     logger.error("TEST01: test {}".format(each_loc.added_at.strftime("%Y-%m-%d %H:%M:%S.%f")))
-    #
-    # logger.error("TEST01: save {}".format(now_utc.strftime("%Y-%m-%d %H:%M:%S.%f")))
-
-    past_dt_object = datetime.datetime.now() - datetime.timedelta(seconds=int(seconds))
-
-    # logger.error("TEST02: {}".format(past_dt_object.strftime("%Y-%m-%d %H:%M:%S.%f")))
-
     if seconds_from_last() > 10:
         get_new_data()
 
-    markers = Location.query.filter(Location.added_at > past_dt_object).all()
-
-    # logger.error("TEST03: {} > {}: {}".format(now_utc.strftime("%Y-%m-%d %H:%M:%S.%f"),
-    #                                           past_dt_object.strftime("%Y-%m-%d %H:%M:%S.%f"),
-    #                                           now_utc > past_dt_object))
-    #
-    # logger.error("TEST04: {}".format(Location.query.filter(Location.added_at > past_dt_object).count()))
-
+    if seconds == '0':
+        markers = Location.query.all()
+    else:
+        past_dt_object = datetime.datetime.now() - datetime.timedelta(seconds=int(seconds))
+        markers = Location.query.filter(Location.added_at > past_dt_object).all()
     return jsonify([i.serialize for i in markers])
 
 

@@ -105,13 +105,6 @@
         console.log("Clicked: " + e.latlng.lat + ", " + e.latlng.lng);
       });
 
-      {% for each_location in location_data %}
-      var node = L.circleMarker([{{each_location.latitude}}, {{each_location.longitude}}], {
-          color: 'red',
-          radius: 5
-      }).bindPopup('Node: {{each_location.device_id}}<br />{{each_location.datetime}}<br />Lat/Lon: {{each_location.latitude|float|round(6)}}, {{each_location.longitude|float|round(6)}}<br />Altitude: {{each_location.altitude}} m, hdop: {{each_location.hdop}}').addTo(map);
-      {% endfor %}
-
       {% for each_gateway in gateway_locations %}
       var gateway = L.marker([{{each_gateway[1]}}, {{each_gateway[2]}}]).bindPopup('Gateway: {{each_gateway[0]}}<br />Lat/Lon: {{each_gateway[1]}}, {{each_gateway[2]}}').addTo(map);
       {% endfor %}
@@ -138,6 +131,8 @@
           add_new_markers(past_seconds)
         }, Number(past_seconds) * 1000);
       }
+
+      add_new_markers('0');
 
       window.onload = function() {
         repeat_add_new_markers('{{refresh_period_seconds}}');
