@@ -17,6 +17,7 @@ Successfully built this on Raspbian OS (Raspberry Pi 3) and Ubuntu 18.04.2 (64-b
  - Multiple map layers, including topology, streets, and satellite ([Bing API key](https://www.bingmapsportal.com) required for satellite)
  - Automatically acquires new data and adds markers to the map
  - Tracking tool to use device GPS to place marker of current position (and direction) on map
+ - Scale bar at edge of map
  - SSL/HTTPS (required for location tracking)
  - Measuring tool for measure distances between points
  - Map stays focused on the same point across page refreshes

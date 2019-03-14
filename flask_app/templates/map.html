@@ -12,6 +12,7 @@
 
     <script src="{{url_for('static', filename='jquery-3.3.1.min.js')}}"></script>
     <script src="{{url_for('static', filename='leaflet/leaflet.js')}}"></script>
+    <script src="{{url_for('static', filename='leaflet-edgescalebar/leaflet.edgescalebar.js')}}"></script>
     <script src="{{url_for('static', filename='leaflet-measure/leaflet-measure.js')}}"></script>
     <script src="{{url_for('static', filename='leaflet-locatecontrol/L.Control.Locate.min.js')}}"></script>
     <script src="{{url_for('static', filename='leaflet-bing-layer.min.js')}}"></script>
@@ -87,6 +88,8 @@
       measureControl.addTo(map);
 
       L.control.locate().addTo(map);
+
+      L.edgeScaleBar().addTo(map);
 
       var baseLayers = {
           "Topographic": esri_Map,
