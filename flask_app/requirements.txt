@@ -1,6 +1,6 @@
 apscheduler
 python-dateutil
 gunicorn
-Flask==0.12.3
+Flask==1.1.1
 flask_sqlalchemy
 requests
