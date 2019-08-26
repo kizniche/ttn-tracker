@@ -10,7 +10,7 @@ This is very similar to the TTN Mapper frontend, however TTN Mapper takes a long
 
 ### Platforms
 
-Successfully built this on Raspbian OS (Raspberry Pi 3) and Ubuntu 18.04.2 (64-bit). However, since this is docker, it should run on a variety of other platforms.
+Successfully built this on the Raspberry Pi (Raspbian Buster) and a desktop PC (64-bit Ubuntu 18.04.2). However, since this is docker, it should run on a variety of other platforms.
 
 ### Features
 
