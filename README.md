@@ -8,6 +8,10 @@ This app pulls coordinate data acquired from the tracker node that's been stored
 
 This is very similar to the TTN Mapper frontend, however TTN Mapper takes a long time to update the data points on its map. This software runs locally on your own hardware and responds instantly to new data on TTN when the browser page is refreshed, making it a good companion in your vehicle if you want to get instant updates as to whether your tracker node successfully transmitted its coordinates or not.
 
+![TTN Tracker 01](https://raw.githubusercontent.com/kizniche/ttn-tracker/master/images/Screenshot_TTN_Tracker_01.png)
+
+Web browser view of TTN Tracker with the gateway (blue marker) and points where the tracking node successfully transmitted to the gateway (red marks).
+
 ### Platforms
 
 Successfully built this on the Raspberry Pi (Raspbian Buster) and a desktop PC (64-bit Ubuntu 18.04.2). However, since this is docker, it should run on a variety of other platforms.
