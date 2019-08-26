@@ -73,9 +73,9 @@ Edit ```ttn-tracker/flask_app/config.py``` with your application API Key, applic
 
 Open a web browser to the address, below, replacing IP_ADDRESS with the IP address of the system running the docker containers.
 
-```https://IP_ADDRESS:5550/dsf673bh```
+```https://IP_ADDRESS/dsf673bh```
 
-Note: there is no security preventing someone from viewing this page if they happen to request "/dsf673bh" on the server (however, knowing this is the page is unlikely). Therefore, make sure you are comfortable with this or implement your own security measures such as not allowing port 5550 to be publicly accessible (connect to your home network via VPN to access the app) or add a login system such as [Flask-Login](https://github.com/maxcountryman/flask-login).
+Note: there is no security preventing someone from viewing this page if they happen to request "/dsf673bh" on the server (however, knowing this is the page is unlikely). Therefore, make sure you are comfortable with this or implement your own security measures such as not allowing port 443 to be publicly accessible (connect to your home network via VPN to access the app) or add a login system such as [Flask-Login](https://github.com/maxcountryman/flask-login).
 
 
 ## Notes
