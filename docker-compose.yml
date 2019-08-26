@@ -8,7 +8,6 @@ services:
     build: ./flask_app
     volumes:
       - ttn_tracker_var:/var/ttn_tracker
-      - /etc/localtime:/etc/localtime:ro  # Use timezone of the host (read-only)
     ports:
       - "8000:8000"
     command: gunicorn -w 1 --worker-class gthread --bind :8000 app:app
@@ -20,7 +19,6 @@ services:
     build: ./nginx
     volumes:
       - ttn_tracker_var:/var/ttn_tracker
-      - /etc/localtime:/etc/localtime:ro  # Use timezone of the host (read-only)
     ports:
       - "80:80"
       - "443:443"
