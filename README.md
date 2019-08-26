@@ -32,6 +32,13 @@ Successfully built this on Raspbian OS (Raspberry Pi 3) and Ubuntu 18.04.2 (64-b
 
 Make sure you have your application set up on The Things Network with the integration "Data Storage". The integration "TTN Mapper" is optional but is recommended to be able to provide signal data to the public.
 
+
+### Install dependencies
+
+```
+sudo apt-get install libffi-dev libssl-dev
+```
+
 ### Install docker and docker-compose
 
 ```
