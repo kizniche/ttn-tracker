@@ -5,6 +5,7 @@ RUN mkdir -pv /var/ttn_tracker/ssl_certs
 
 WORKDIR /home/project/flask_app
 COPY requirements.txt /home/project/flask_app
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /home/project/flask_app
