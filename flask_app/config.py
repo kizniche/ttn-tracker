@@ -1,3 +1,9 @@
+#
+# This is a config template.
+# Make a copy of this file and name it my_config.py
+# This way your config will not be published to github.
+#
+
 # -*- coding: utf-8 -*-
 # Where to store SQLite database
 path_db = '/var/ttn_tracker/ttn_tracker_database.db'
