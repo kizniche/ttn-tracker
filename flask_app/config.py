@@ -11,7 +11,7 @@ start_lon = -77.855346
 
 # TTN Application
 application = "ttn_application"
-app_key = "key ttn-account-TTN_APP_KEY"
+app_key = "ttn-account-TTN_APP_KEY"
 
 # Application devices
 devices = [
