@@ -124,6 +124,8 @@ def get_new_data():
         key = 'key {}'.format(app_key)
         headers = {'Authorization': key, 'Content-Type': 'application/json'}
         response = requests.get(endpoint, headers=headers)
+        if response.status_code != 200:
+            logger.info(response.reason)
         try:
             for each_resp in response.json():
                 if (not Location.query.filter(Location.datetime == each_resp['time']).first() and
