@@ -1,0 +1,8 @@
+__pycache__
+
+flask_app/my_config.py
+
+.vscode/
+.idea/
+.cache/
+.DS_Store

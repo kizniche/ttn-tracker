@@ -9,16 +9,30 @@ from math import sqrt
 import os
 import requests
 from apscheduler.schedulers.background import BackgroundScheduler
-from config import app_key
-from config import application
-from config import bing_api_key
-from config import config_app
-from config import devices
-from config import gateway_locations
-from config import path_db
-from config import refresh_period_seconds
-from config import start_lat
-from config import start_lon
+
+try:
+    from my_config import app_key
+    from my_config import application
+    from my_config import bing_api_key
+    from my_config import config_app
+    from my_config import devices
+    from my_config import gateway_locations
+    from my_config import path_db
+    from my_config import refresh_period_seconds
+    from my_config import start_lat
+    from my_config import start_lon
+except: 
+    from config import app_key
+    from config import application
+    from config import bing_api_key
+    from config import config_app
+    from config import devices
+    from config import gateway_locations
+    from config import path_db
+    from config import refresh_period_seconds
+    from config import start_lat
+    from config import start_lon
+
 from dateutil.parser import parser
 from flask import Flask
 from flask import jsonify
