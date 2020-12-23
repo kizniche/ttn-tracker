@@ -9,6 +9,12 @@ from math import sqrt
 import os
 import requests
 from apscheduler.schedulers.background import BackgroundScheduler
+from dateutil.parser import parser
+from flask import Flask
+from flask import jsonify
+from flask import render_template
+from flask_sqlalchemy import SQLAlchemy
+
 from config import app_key
 from config import application
 from config import bing_api_key
@@ -19,11 +25,6 @@ from config import path_db
 from config import refresh_period_seconds
 from config import start_lat
 from config import start_lon
-from dateutil.parser import parser
-from flask import Flask
-from flask import jsonify
-from flask import render_template
-from flask_sqlalchemy import SQLAlchemy
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 logger = logging.getLogger(__name__)
@@ -90,6 +91,7 @@ def main_page():
     get_new_data()
     return render_template('map.html',
                            bing_api_key=bing_api_key,
+                           devices=devices,
                            gateway_locations=gateway_locations,
                            location_data=Location.query.all(),
                            refresh_period_seconds=refresh_period_seconds,
