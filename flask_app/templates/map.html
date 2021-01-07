@@ -120,6 +120,7 @@
       legend_age.onAdd = function(map) {
         var div = L.DomUtil.create('div', 'info legend_age');
         div.innerHTML = '<select>' +
+            '<option value="all">All markers</option>' +
             '<option value="7day">Past 7 Days</option>' +
             '<option value="1day">Past 1 Day</option>' +
             '<option value="6hour">Past 6 Hours</option>' +
