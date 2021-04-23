@@ -91,6 +91,7 @@ def main_page():
     get_new_data()
     return render_template('map.html',
                            bing_api_key=bing_api_key,
+                           devices=devices,
                            gateway_locations=gateway_locations,
                            location_data=Location.query.all(),
                            refresh_period_seconds=refresh_period_seconds,
@@ -122,8 +123,11 @@ def get_new_data():
         endpoint = "https://{app}.data.thethingsnetwork.org/api/v2/query/{dev}?last={time}".format(
             app=application, dev=each_device, time="{}s".format(past_seconds))
         logger.info(endpoint)
-        headers = {"Authorization": app_key}
+        key = 'key {}'.format(app_key)
+        headers = {'Authorization': key, 'Content-Type': 'application/json'}
         response = requests.get(endpoint, headers=headers)
+        if response.status_code != 200:
+            logger.info(response.reason)
         try:
             for each_resp in response.json():
                 if (not Location.query.filter(Location.datetime == each_resp['time']).first() and

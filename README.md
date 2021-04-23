@@ -26,6 +26,8 @@ Successfully built this on the Raspberry Pi (Raspbian Buster) and a desktop PC (
  - Measuring tool for measure distances between points
  - Map stays focused on the same point across page refreshes
  - Clicking gateway or data point markers pops up information about them
+ - Toggle visibility of markers of each device on map
+ - Select age of markers to show on map
 
 ### TODO
 
@@ -40,19 +42,20 @@ Make sure you have your application set up on The Things Network with the integr
 ### Install dependencies
 
 ```
-sudo apt-get install libffi-dev libssl-dev
+sudo apt-get install -y libffi-dev libssl-dev
 ```
 
 ### Install docker and docker-compose
 
 ```
 curl -sSL https://get.docker.com | sh
-sudo pip install docker-compose
+sudo apt-get install -y python3 python3-pip
+sudo pip3 install docker-compose
 ```
 
 ### Add user to docker group
 
-```sudo usermod -a -G docker YOUR_USER```
+```sudo usermod -a -G docker $USER```
 
 Then log out and back in again.
 

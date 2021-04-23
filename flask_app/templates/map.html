@@ -58,8 +58,7 @@
       var default_zoom = true;
 
       b = JSON.parse(localStorage.getItem('bounds'));
-      if (b == null)
-      {
+      if (b == null) {
         map = L.map('mapid', {layers: [esri_Map]}).setView([{{start_lat}}, {{start_lon}}], 15);
       }
       else {
@@ -77,7 +76,6 @@
 
       //disable inertia because it is irritating and slow
       map.options.inertia=false;
-
 
       var measureControl = L.control.measure({
         activeColor: '#FF0000',
@@ -112,6 +110,54 @@
       var gateway = L.marker([{{each_gateway[1]}}, {{each_gateway[2]}}]).bindPopup('Gateway: {{each_gateway[0]}}<br />Lat/Lon: {{each_gateway[1]}}, {{each_gateway[2]}}').addTo(map);
       {% endfor %}
 
+      var markers = {};
+      {% for each_device in devices %}
+      markers['{{each_device}}'] = new L.FeatureGroup();
+      map.addLayer(markers['{{each_device}}']);
+      {% endfor %}
+
+      var legend_age = L.control({position: 'topright'});
+      legend_age.onAdd = function(map) {
+        var div = L.DomUtil.create('div', 'info legend_age');
+        div.innerHTML = '<select>' +
+            '<option value="all">All markers</option>' +
+            '<option value="7day">Past 7 Days</option>' +
+            '<option value="1day">Past 1 Day</option>' +
+            '<option value="6hour">Past 6 Hours</option>' +
+            '<option value="1hour">Past 1 Hour</option>' +
+            '<option value="30min">Past 30 Min</option>' +
+            '</select>';
+        div.firstChild.onmousedown = div.firstChild.ondblclick = L.DomEvent.stopPropagation;
+        return div;
+      };
+      legend_age.addTo(map);
+
+      function toggleFunction(element) {
+        if (element.checked) {
+          map.addLayer(markers[element.value]);
+        } else {
+          map.removeLayer(markers[element.value]);
+        }
+      }
+
+      var legend_devices = L.control({position: 'topright'});
+      legend_devices.onAdd = function(map) {
+        var div = L.DomUtil.create('div');
+        div.innerHTML = `
+        <div class="leaflet-control-layers leaflet-control-layers-expanded">
+          <form>
+            {% for each_device in devices -%}
+            <div>
+              <input class="leaflet-control-layers-overlays" id="command"
+                onclick=toggleFunction(this) type="checkbox" value="{{each_device}}" checked>{{each_device}}</input>
+            </div>
+            {%- endfor %}
+          </form>
+        </div>`;
+        return div;
+      };
+      legend_devices.addTo(map);
+
       function add_new_markers(past_seconds) {
         var url = '/dsf673bh_past/' + past_seconds;
         $.getJSON(url,
@@ -121,12 +167,35 @@
                 var node = L.circleMarker([parseFloat(data[i]["latitude"]), parseFloat(data[i]["longitude"])], {
                   color: 'red',
                   radius: 5
-                }).bindPopup('Node: ' + data[i]["device_id"] + '<br />' + data[i]["datetime"] + '<br />Lat/Lon: ' + data[i]["latitude"] + ', ' + data[i]["longitude"] + '<br />Altitude: ' + data[i]["altitude"] + ' m, hdop: ' + data[i]["hdop"]).addTo(map);
+                });
+                node.bindPopup('Node: ' + data[i]["device_id"] + '<br />' + data[i]["datetime"] + '<br />Lat/Lon: ' + data[i]["latitude"] + ', ' + data[i]["longitude"] + '<br />Altitude: ' + data[i]["altitude"] + ' m, hdop: ' + data[i]["hdop"]);
+                markers[data[i]["device_id"]].addLayer(node);
               }
             }
           }
         );
       }
+
+      $('select').change(function(){
+        for (var key in markers) {
+          map.removeLayer(markers[key]);
+          markers[key] = new L.FeatureGroup();
+          map.addLayer(markers[key]);
+        }
+        if ($(this).val() === "all") {
+          add_new_markers(0);
+        } else if ($(this).val() === "7day") {
+          add_new_markers(604800);
+        } else if ($(this).val() === "1day") {
+          add_new_markers(86400);
+        } else if ($(this).val() === "6hour") {
+          add_new_markers(21600);
+        } else if ($(this).val() === "1hour") {
+          add_new_markers(3600);
+        } else if ($(this).val() === "30min") {
+          add_new_markers(1800);
+        }
+      });
 
       // Repeat function for getLastData()
       function repeat_add_new_markers(past_seconds) {
