@@ -107,6 +107,10 @@ Note: there is no security preventing someone from viewing this page if they hap
 
 ```docker ps```
 
+### View container log
+
+```docker logs flask_app```
+
 ### Start a shell in a docker container
 
 ```docker exec -i -t CONTAINER_ID /bin/bash```
