@@ -120,10 +120,10 @@ def get_new_data():
         past_seconds = 604800  # 7 days, max The Things Network storage allows
 
     for each_device in devices:
-        endpoint = "https://{app}.data.thethingsnetwork.org/api/v2/query/{dev}?last={time}".format(
+        endpoint = "https://eu1.cloud.thethings.network/api/v3/as/applications/{app}/devices/{dev}/packages/storage/uplink_message?last={time}".format(
             app=application, dev=each_device, time="{}s".format(past_seconds))
         logger.info(endpoint)
-        key = 'key {}'.format(app_key)
+        key = 'Bearer {}'.format(app_key)
         headers = {'Authorization': key, 'Content-Type': 'application/json'}
         response = requests.get(endpoint, headers=headers)
         if response.status_code != 200:
@@ -135,7 +135,7 @@ def get_new_data():
                     logger.info("{}, {}".format(each_resp['latitude'], each_resp['longitude']))
                     new_location = Location(
                         device_id=each_resp['device_id'],
-                        raw=each_resp['raw'],
+                        raw='',
                         datetime_obj=parser().parse(each_resp['time']),
                         datetime=each_resp['time'],
                         latitude=each_resp['latitude'],
