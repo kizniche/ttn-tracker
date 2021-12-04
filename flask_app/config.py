@@ -9,6 +9,9 @@ refresh_period_seconds = 15
 start_lat = 35.978781
 start_lon = -77.855346
 
+# TTN Cluster
+cluster = "nam1"
+
 # TTN Application
 application = "ttn_application"
 app_key = "ttn-account-TTN_APP_KEY"

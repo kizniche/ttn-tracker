@@ -1,11 +1,6 @@
 import datetime
+import json
 import logging
-from math import atan2
-from math import cos
-from math import radians
-from math import sin
-from math import sqrt
-
 import os
 import requests
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -14,10 +9,16 @@ from flask import Flask
 from flask import jsonify
 from flask import render_template
 from flask_sqlalchemy import SQLAlchemy
+from math import atan2
+from math import cos
+from math import radians
+from math import sin
+from math import sqrt
 
 from config import app_key
 from config import application
 from config import bing_api_key
+from config import cluster
 from config import config_app
 from config import devices
 from config import gateway_locations
@@ -86,7 +87,7 @@ if not os.path.exists(path_db):
     db.create_all()
 
 
-@app.route('/dsf673bh')
+@app.route('/map')
 def main_page():
     get_new_data()
     return render_template('map.html',
@@ -99,7 +100,7 @@ def main_page():
                            start_lon=start_lon)
 
 
-@app.route('/dsf673bh_past/<seconds>')
+@app.route('/past/<seconds>')
 def get_past_data(seconds):
     if seconds_from_last() > 10:
         get_new_data()
@@ -120,30 +121,46 @@ def get_new_data():
         past_seconds = 604800  # 7 days, max The Things Network storage allows
 
     for each_device in devices:
-        endpoint = "https://eu1.cloud.thethings.network/api/v3/as/applications/{app}/devices/{dev}/packages/storage/uplink_message?last={time}".format(
-            app=application, dev=each_device, time="{}s".format(past_seconds))
+        endpoint = "https://{cluster_loc}.cloud.thethings.network/api/v3/as/applications/{app}/devices/{dev}/packages/storage/uplink_message?order=-received_at&type=uplink_message?last={time}".format(
+            cluster_loc=cluster, app=application, dev=each_device, time="{}s".format(past_seconds))
         logger.info(endpoint)
         key = 'Bearer {}'.format(app_key)
-        headers = {'Authorization': key, 'Content-Type': 'application/json'}
+        headers = {'Accept': 'text/event-stream', 'Authorization': key}
         response = requests.get(endpoint, headers=headers)
         if response.status_code != 200:
             logger.info(response.reason)
         try:
-            for each_resp in response.json():
-                if (not Location.query.filter(Location.datetime == each_resp['time']).first() and
-                        -90 < float(each_resp['latitude']) <= 90 and -120 <= float(each_resp['longitude']) <= 80):
-                    logger.info("{}, {}".format(each_resp['latitude'], each_resp['longitude']))
+            response_format = "{\"data\": [" + response.text.replace("\n\n", ",")[:-1] + "]}"
+            response_data = json.loads(response_format)
+            uplink_msg = response_data["data"]
+            for each_resp in uplink_msg:
+                response_data = each_resp["result"]
+                uplink_message = response_data["uplink_message"]
+
+                received = response_data["received_at"]
+                lat = uplink_message["decoded_payload"].get("latitude", "")
+                lon = uplink_message["decoded_payload"].get("longitude", "")
+                alt = uplink_message["decoded_payload"].get("altitude", "")
+                qos = uplink_message["decoded_payload"].get("hdop", "")
+                end_device_ids = response_data["end_device_ids"]
+                device = end_device_ids["device_id"]
+                rawpay = uplink_message["frm_payload"]
+
+                if (not Location.query.filter(Location.datetime == received).first() and
+                        -90 < float(lat) <= 90 and -120 <= float(lon) <= 80):
+                    logger.info("{}, {}".format(lat, lon))
                     new_location = Location(
-                        device_id=each_resp['device_id'],
-                        raw='',
-                        datetime_obj=parser().parse(each_resp['time']),
-                        datetime=each_resp['time'],
-                        latitude=each_resp['latitude'],
-                        longitude=each_resp['longitude'],
-                        altitude=each_resp['altitude'],
-                        hdop=each_resp['hdop'])
+                        device_id=device,
+                        raw=rawpay,
+                        datetime_obj=parser().parse(received),
+                        datetime=received,
+                        latitude=lat,
+                        longitude=lon,
+                        altitude=alt,
+                        hdop=qos)
                     db.session.add(new_location)
                     db.session.commit()
+                    logger.info(new_location)
         except:
             pass
 
