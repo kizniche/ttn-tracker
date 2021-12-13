@@ -159,7 +159,7 @@
       legend_devices.addTo(map);
 
       function add_new_markers(past_seconds) {
-        var url = '/dsf673bh_past/' + past_seconds;
+        var url = '/past/' + past_seconds;
         $.getJSON(url,
           function (data, responseText, jqXHR) {
             if (jqXHR.status !== 204) {
