@@ -113,7 +113,9 @@ docker-compose down
 
 ### Stop services and delete containers
 
-```docker-compose rm -fs```
+```
+docker-compose rm -fs
+```
 
 ### List docker containers
 
