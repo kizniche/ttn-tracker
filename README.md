@@ -55,7 +55,9 @@ sudo pip3 install docker-compose
 
 ### Add user to docker group
 
-```sudo usermod -a -G docker $USER```
+```
+sudo usermod -a -G docker $USER
+```
 
 Then log out and back in again.
 
@@ -68,13 +70,17 @@ cd ttn-tracker
 
 ### Edit the config file
 
-Edit ```ttn-tracker/flask_app/config.py``` with your application API Key, application ID, Device ID(s), gateway location(s), and Bing map API key (optional) before building the docker images. If you need to edit this file after the images are created, you can rebuild the image (destroying data) or copy the new config file over the old file while the flask_app container is running (see [Notes](#notes), below).
+Edit `ttn-tracker/flask_app/config.py` with your application API Key, application ID, Device ID(s), gateway location(s), and Bing map API key (optional) before building the docker images. If you need to edit this file after the images are created, you can rebuild the image (destroying data) or copy the new config file over the old file while the flask_app container is running (see [Notes](#notes), below).
 
-```nano flask_app/config.py```
+```
+nano flask_app/config.py
+```
 
 ### Build and start the services
 
-```make build```
+```
+make build
+```
 
 ### Access the app
 
@@ -89,15 +95,21 @@ Note: there is no security preventing someone from viewing this page if they hap
 
 ### Stop services (preserving data)
 
-```docker-compose stop```
+```
+docker-compose stop
+```
 
 ### Start services
 
-```docker-compose start```
+```
+docker-compose start
+```
 
 ### Stop services and delete data (keep containers)
 
-```docker-compose down```
+```
+docker-compose down
+```
 
 ### Stop services and delete containers
 
@@ -105,20 +117,30 @@ Note: there is no security preventing someone from viewing this page if they hap
 
 ### List docker containers
 
-```docker ps```
+```
+docker ps
+```
 
 ### View container log
 
-```docker logs flask_app```
+```
+docker logs flask_app
+```
 
 ### Start a shell in a docker container
 
-```docker exec -i -t CONTAINER_ID /bin/bash```
+```
+docker exec -i -t CONTAINER_ID /bin/bash
+```
 
 ### Copy a file to a docker container
 
-```docker cp ./foo.txt CONTAINER_ID:/foo.txt```
+```
+docker cp ./foo.txt CONTAINER_ID:/foo.txt
+```
 
 ### Copy a file from a docker container
 
-```docker cp CONTAINER_ID:/foo.txt ./foo.txt```
+```
+docker cp CONTAINER_ID:/foo.txt ./foo.txt
+```
